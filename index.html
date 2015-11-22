@@ -11,7 +11,7 @@
     </head>
     
     <body>
-        <input id="search" class="form-control" type="text" data-bind="searchFilter">
+        <input id="search" class="form-control" type="text" data-bind='value:searchFilter,valueUpdate: "afterkeydown"'>
         <div id="map">   
         </div>
         <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyC7qTG1ZGZZZ5E_ChSnYPqTMgXm_DondPY"></script>

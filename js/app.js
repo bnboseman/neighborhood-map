@@ -17,7 +17,7 @@
             };
             
             this.showLocations = function() {
-                coordinates.forEach( function(location) {
+                 ko.utils.arrayForEach( coordinates(), function(location) {
                     if (location.visable === true) {
                         var marker = new google.maps.Marker(location);
                         marker.setMap(self.map);
@@ -25,7 +25,7 @@
                     
                 }); 
             };
-            var coordinates = [
+            var coordinates = ko.observableArray([
                 new this.createLocation('Guitar Center', 40.757,-73.987),
                 new this.createLocation('Sam Ash', 40.753, -73.994 ),
                 new this.createLocation('Rudy\'s Music (Closed)', 40.759, -73.983),
@@ -33,18 +33,22 @@
                 new this.createLocation('Colony Music (Closed)', 40.761061, -73.984740),
                 new this.createLocation('Museum of Modern Art', 40.761417, -73.977120),
                 new this.createLocation('Dizzy\'s Jazz Club', 40.768425, -73.982)
-            ];
+            ]);
             
             
         };
         
-        var ViewModel = function() {
-            var location = new locations;
-            location.showLocations();
+        var ViewModel = {
+            location: new locations(),
+            searchFilter: ko.observable('You'),
         };
+        
+        ViewModel.searchFilter.subscribe(function(newValue) {
+
+        });
         
         ko.applyBindings(ViewModel);
-        
+        ViewModel.location.showLocations();
         
 }());
     

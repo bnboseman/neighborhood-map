@@ -1,5 +1,5 @@
 (function() {
-        var locations = function() {
+        var map = function() {
             var self = this;
             this.map = new google.maps.Map(document.getElementById('map'), {
                 center: {lat: 40.7577, lng: -73.9857},
@@ -7,25 +7,16 @@
             });
             
             
-            
             this.createLocation = function( title, latitude, longitude ) {
                 return {
                     position: new google.maps.LatLng(latitude, longitude),
                     title:title,
-                    visable: true
+                    visible: true,
+                    map: self.map
                 };
             };
             
-            this.showLocations = function() {
-                 ko.utils.arrayForEach( coordinates(), function(location) {
-                    if (location.visable === true) {
-                        var marker = new google.maps.Marker(location);
-                        marker.setMap(self.map);
-                    }
-                    
-                }); 
-            };
-            var coordinates = ko.observableArray([
+            this.coordinates = ko.observableArray([
                 new this.createLocation('Guitar Center', 40.757,-73.987),
                 new this.createLocation('Sam Ash', 40.753, -73.994 ),
                 new this.createLocation('Rudy\'s Music (Closed)', 40.759, -73.983),
@@ -38,17 +29,23 @@
             
         };
         
-        var ViewModel = {
-            location: new locations(),
-            searchFilter: ko.observable('You'),
+        var MapViewModel = {
+            map: new map(),
+            searchFilter: ko.observable(''),
+            showLocations: function() {
+                 ko.utils.arrayForEach( this.map.coordinates(), function(location) {
+                        var marker = new google.maps.Marker(location);
+                    
+                }); 
+            }
         };
         
-        ViewModel.searchFilter.subscribe(function(newValue) {
-
+        MapViewModel.searchFilter.subscribe(function(newValue) {
+                console.log(newValue);
         });
         
-        ko.applyBindings(ViewModel);
-        ViewModel.location.showLocations();
+        ko.applyBindings(MapViewModel);
+        MapViewModel.showLocations();
         
 }());
     

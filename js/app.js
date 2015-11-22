@@ -9,27 +9,20 @@
             
             
             this.createLocation = function( title, latitude, longitude ) {
-                console.log( parseFloat(latitude),  parseFloat(longitude));
-                return new  google.maps.Marker({
-                    position: {
-                        lat: parseFloat(latitude),
-                        lng: parseFloat(longitude)
-                    },
-                    title:title
-                });
-                /*return {
-                    position: {
-                        lat: parseFloat(latitude),
-                        lon: parseFloat(longitude)
-                    },
-                    title: title
-                };*/
+                return {
+                    position: new google.maps.LatLng(latitude, longitude),
+                    title:title,
+                    visable: true
+                };
             };
             
             this.showLocations = function() {
-                console.log(self.map);
                 coordinates.forEach( function(location) {
-                    location.setMap(self.map);
+                    if (location.visable === true) {
+                        var marker = new google.maps.Marker(location);
+                        marker.setMap(self.map);
+                    }
+                    
                 }); 
             };
             var coordinates = [

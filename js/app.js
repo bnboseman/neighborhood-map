@@ -8,7 +8,7 @@
                 });
                 this.markers = new ko.observableArray();
                 this.searchFilter =  ko.observable('');
-                this.createLocation = function( title, latitude, longitude ) {
+                this.createLocation = function( title, latitude, longitude, data ) {
                         var location = {
                                 position: new google.maps.LatLng(latitude, longitude),
                                 title:title,
@@ -16,11 +16,17 @@
                                 map: self.map
                         };
                     self.markers.push(new google.maps.Marker(location));
+                    self.markers()[self.markers().length-1].addListener('click', function() {
+                        
+                    });
                     return location;
                 };
                 this.coordinates = [
                         new self.createLocation('Guitar Center', 40.757, -73.987),
                         new self.createLocation('Guitar Center', 40.736817, -73.994547),
+                        new self.createLocation('Jazz Standard', 40.742158, -73.983826),
+                        new self.createLocation('Decade', 40.761092, -73.960916),
+                        new self.createLocation('Iridium', 40.761816, -73.983389),
                         new self.createLocation('Jazz Gallery', 40.744605, -73.988547),
                         new self.createLocation('Guitar New York', 40.762517, -73.977761),
                         new self.createLocation('Metropolitan Room', 40.741462, -73.992067),

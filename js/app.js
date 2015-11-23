@@ -15,7 +15,7 @@
                                 visible: true,
                                 map: self.map
                         };
-                    self.markers.push(new google.maps.Marker(location)     );
+                    self.markers.push(new google.maps.Marker(location));
                     return location;
                 };
                 this.coordinates = [
@@ -33,16 +33,28 @@
                 ];
         self.searchFilter.subscribe(function(searchValue) {
                 searchValue = searchValue.toLowerCase();
+                var change = false;
                 ko.utils.arrayForEach( self.markers(), function(marker) {
                         var text = marker.title.toLowerCase();
+                        
                         if ( text.search(searchValue) === -1 ) {
-                                marker.setVisible(false);
+                                if (marker.getVisible() == true) {
+                                        change = true;
+                                }
+                               marker.setVisible(false);
                         } else {
+                                if (marker.getVisible() == false) {
+                                        change = true;
+                                }
                                 marker.setVisible(true);
-                                console.log(marker);
                         }
                     
-                }); 
+                });
+                if (change == true) {
+                        var data = self.markers().slice(0);
+                        self.markers([]);
+                        self.markers(data);
+                }
         });
                 
         };

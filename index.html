@@ -14,7 +14,7 @@
         <div id="search">
             <input class="form-control" placeholder="Search" type="text" data-bind='value:searchFilter,valueUpdate: "afterkeydown"'>
             <ul data-bind="foreach: markers">
-                <li data-bind="text: title"></li>
+                <li data-bind="text: title, visible:getVisible()"></li>
                 
             </ul>
         </div>

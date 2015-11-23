@@ -10,6 +10,8 @@ body,
     position: absolute;
     z-index: 5;
     right: 0;
-    margin: 10px;
-    width: 200px;
+    padding: 10px;
+    width: 300px;
+    height: 100%;
+    background-color: #fff;
 }

@@ -1,5 +1,5 @@
 (function() {
-        function yelp( businessId ) {
+        function yelp( businessId, marker) {
                 var auth = { 
                         consumerKey: "oZsD8h9BM0VQtveN7sYvHg", 
                         consumerSecret: "EQhmDrmyjsJH7F5s3SEe516JbGY",
@@ -32,21 +32,26 @@
                   dataType: 'jsonp',
                   success: function(results) {
                         mapview.business(results);
-                        /*mapview.business(results.name);
-                        mapview.business_phone(results.display_phone);
-                        mapview.business_image(results.image_url);
-                        mapview.rating(results.rating);
-                        mapview.rating_image(results.rating_img_url_large);*/
                         mapview.reviews = [];
                         results.reviews.forEach( function(review) {
                                 mapview.reviews.push(review.excerpt + " - " + review.user.name);
                         });
+                        
+                        if (marker !== undefined) {
+                                var contentString = '<div class="content">'+
+                                        '<h1 id="firstHeading" class="firstHeading">' + results.name + '</h1>'+
+                                        '<div id="bodyContent">'+
+                                        '<p>' + results.reviews[results.reviews.length - 1].excerpt + " - " + results.reviews[results.reviews.length - 1].user.name + '</p>'+
+                                        '<p><a href="' + results.url + '">'+
+                                        results.url + '</a> '+
+                                        '</div>'+
+                                        '</div>';
+                                new google.maps.InfoWindow({content: contentString}).open( mapview.map , marker);
+                        }
                   },
                   fail: function() {
                     // Do stuff on fail
                   }
-                }).done(function(data) {
-                        console.log(mapview.business()['location']['display_address']);
                 });
         }
         
@@ -63,6 +68,12 @@
                 this.markers = new ko.observableArray();
                 this.searchFilter =  ko.observable('');
                 this.business = ko.observable('');
+                
+                this.updateText =  function(event) {
+                        event.preventDefault();
+                        
+                        yelp($(this).attr('href'));
+                };
                 
                 /** Funtion to create a locations  for markers array
                  * @param title string the name of the location
@@ -86,7 +97,7 @@
                     
                     // add click function to the new marker
                     self.markers()[self.markers().length-1].addListener('click', function() {
-                        yelp(this.yelp_id);
+                        yelp(this.yelp_id, this);
                     });
                     
                     // return the object
@@ -146,8 +157,9 @@
         // Activate knockout
         mapview = new MapViewModel();
         ko.applyBindings(mapview);
-        
 }());
+
+
     
     
 function nonce_generate(length) {

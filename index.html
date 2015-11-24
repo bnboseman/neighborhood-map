@@ -14,7 +14,7 @@
         <div id="search">
             <input class="form-control" placeholder="Search" type="text" data-bind='value:searchFilter,valueUpdate: "afterkeydown"'>
             <ul data-bind="foreach: markers">
-                <li data-bind="text: title, visible:getVisible()"></li>
+                <a data-bind="attr: {href: yelp_id }"><li data-bind="text: title, visible:getVisible()"></li></a>
             </ul>
             <div>
                 <h1 data-bind="text: business()['name']"></h1>

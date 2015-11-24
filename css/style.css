@@ -31,3 +31,11 @@ h1 {
     font-size: 18px;
     font-weight: 600;
 }
+
+a, a:hover, a:active, a:visited {
+    color: #fff;
+}
+
+.content a, .content a:hover,.content  a:active,.content  a:visited {
+    color: #3cf;
+}

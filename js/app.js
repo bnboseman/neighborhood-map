@@ -46,7 +46,7 @@
                     // Do stuff on fail
                   }
                 }).done(function(data) {
-                        
+                        console.log(mapview.business()['location']['display_address']);
                 });
         }
         

@@ -18,9 +18,9 @@
             </ul>
             <div>
                 <h1 data-bind="text: business()['name']"></h1>
-                <img data-bind="attr: {src: business()['image_url'], title: business()['name']}">
-                <span data-bind="text: business()['display_phone']"></span><br />
-                
+                <img data-bind="attr: {src : business()['image_url'], title: business()['name']}">
+                <div data-bind="text: business()['display_phone']"></div><br />
+                <img data-bind="attr: {src : business()['rating_img_url_large'], title: business()['rating']}">
                 
             </div>
         </div>

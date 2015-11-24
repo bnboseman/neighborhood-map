@@ -16,7 +16,11 @@
             <ul data-bind="foreach: markers">
                 <li data-bind="text: title, visible:getVisible()"></li>
             </ul>
-            <div data-bind="selectedLocation">
+            <div>
+                <h1 data-bind="text: business()['name']"></h1>
+                <img data-bind="attr: {src: business()['image_url'], title: business()['name']}">
+                <span data-bind="text: business()['display_phone']"></span><br />
+                
                 
             </div>
         </div>

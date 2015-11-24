@@ -23,7 +23,7 @@
                 
                 var encodedSignature = oauthSignature.generate('GET',yelp_url, parameters, auth.consumerSecret, auth.accessTokenSecret);
                 parameters.oauth_signature = encodedSignature;
-                
+                var response = null;
                 
                 $.ajax({
                   url: yelp_url,
@@ -31,14 +31,26 @@
                   cache: true,                // This is crucial to include as well to prevent jQuery from adding on a cache-buster parameter "_=23489489749837", invalidating our oauth-signature
                   dataType: 'jsonp',
                   success: function(results) {
-                        console(results);
-                        return results;
+                        mapview.business(results);
+                        /*mapview.business(results.name);
+                        mapview.business_phone(results.display_phone);
+                        mapview.business_image(results.image_url);
+                        mapview.rating(results.rating);
+                        mapview.rating_image(results.rating_img_url_large);*/
+                        mapview.reviews = [];
+                        results.reviews.forEach( function(review) {
+                                mapview.reviews.push(review.excerpt + " - " + review.user.name);
+                        });
                   },
                   fail: function() {
                     // Do stuff on fail
                   }
+                }).done(function(data) {
+                        
                 });
         }
+        
+        
         var MapViewModel = function() {
                 var self = this;
                 
@@ -50,6 +62,7 @@
                 
                 this.markers = new ko.observableArray();
                 this.searchFilter =  ko.observable('');
+                this.business = ko.observable('');
                 
                 /** Funtion to create a locations  for markers array
                  * @param title string the name of the location
@@ -68,12 +81,12 @@
                         };
                         
                     // add marker to array of markers
-                    self.markers.push(new google.maps.Marker(location));
-                    console.log(self.markers()[self.markers().length-1]);       
+                    self.markers.push(new google.maps.Marker(location));     
                     
                     
                     // add click function to the new marker
                     self.markers()[self.markers().length-1].addListener('click', function() {
+                        yelp(this.yelp_id);
                     });
                     
                     // return the object
@@ -81,17 +94,17 @@
                 };
                 
                 this.coordinates = [
-                        new self.createLocation('Guitar Center', 40.757, -73.987, 'guitar-center-manhattan-3'),
-                        new self.createLocation('Guitar Center', 40.736817, -73.994547, 'guitar-center-manhattan'),
-                        new self.createLocation('Jazz Standard', 40.742158, -73.983826, 'jazz-standard-new-york'),
+                        new self.createLocation('Guitar Center', 40.7578132, -73.9871857, 'guitar-center-manhattan-3'),
+                        new self.createLocation('Guitar Center', 40.736702, -73.9949493, 'guitar-center-manhattan'),
+                        new self.createLocation('Jazz Standard', 40.7421646118164, -73.9838256835938, 'jazz-standard-new-york'),
                         new self.createLocation('Iridium', 40.761816, -73.983389, 'the-iridium-new-york'),
                         new self.createLocation('Jazz Gallery', 40.744605, -73.988547, 'the-jazz-gallery-new-york-2'),
                         new self.createLocation('Guitar New York', 40.762517, -73.977761, 'guitar-new-york-new-york'),
-                        new self.createLocation('Metropolitan Room', 40.741462, -73.992067, 'metropolitan-room-new-york'),
+                        new self.createLocation('Metropolitan Room', 40.7414627075195, -73.9920654296875, 'metropolitan-room-new-york'),
                         new self.createLocation('Sam Ash', 40.753, -73.994,'sam-ash-music-stores-new-york'),
                         new self.createLocation("Rudy's Music (Closed)", 40.759, -73.983, 'rudys-music-stop-new-york-2'),
                         new self.createLocation('Birdland Jazz Club', 40.759194, -73.989800, 'birdland-new-york'),
-                        new self.createLocation('Museum of Modern Art', 40.761417, -73.977120, 'the-museum-of-modern-art-new-york-2'),
+                        new self.createLocation('Museum of Modern Art', 40.7607243955135, -73.9764585345984, 'the-museum-of-modern-art-new-york-2'),
                         new self.createLocation("Dizzy's Jazz Club", 40.768425, -73.982, 'dizzys-club-coca-cola-new-york')
                 ];
                 

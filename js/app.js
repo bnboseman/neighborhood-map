@@ -1,53 +1,42 @@
 (function() {
-        function yelp(searchNear, searchFor) {
-        var auth = { 
-                consumerKey: "oZsD8h9BM0VQtveN7sYvHg", 
-                consumerSecret: "EQhmDrmyjsJH7F5s3SEe516JbGY",
-                accessToken: "N-R-C5cfJXo-4LrgGcpBJUQ6w3Y2_I6_",
-                accessTokenSecret: "H9H8IFqCUxHqXxqJuoM0dEtHiDo",
-                serviceProvider : {
-			        signatureMethod : "HMAC-SHA1"
-			    }
-        };
-        
-        var accessor = {
-                consumerSecret : auth.consumerSecret,
-                tokenSecret : auth.accessTokenSecret
-        };
-        
+        function yelp( businessId ) {
+                var auth = { 
+                        consumerKey: "oZsD8h9BM0VQtveN7sYvHg", 
+                        consumerSecret: "EQhmDrmyjsJH7F5s3SEe516JbGY",
+                        accessToken: "N-R-C5cfJXo-4LrgGcpBJUQ6w3Y2_I6_",
+                        accessTokenSecret: "H9H8IFqCUxHqXxqJuoM0dEtHiDo",
+                        serviceProvider : {
+                            signatureMethod : "HMAC-SHA1"
+                        }
+                };
+                var yelp_url = 'https://api.yelp.com/v2/business/' + businessId;
 
-        var parameters = [];
-        parameters.push(['term', searchFor]);
-        parameters.push(['location', searchNear]);
-        parameters.push(['callback', 'cb']);
-        parameters.push(['oauth_consumer_key', auth.consumerKey]);
-        parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
-        parameters.push(['oauth_token', auth.accessToken]);
-        parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
-        
-        
-        var message = {
-                'action' : 'http://api.yelp.com/v2/search',
-                'method' : 'GET',
-                'parameters' : parameters
-        };
-        
-        OAuth.setTimestampAndNonce(message);
-        OAuth.SignatureMethod.sign(message, accessor);
-
-        var parameterMap = OAuth.getParameterMap(message.parameters);
-        parameterMap.oauth_signature = OAuth.percentEncode(parameterMap.oauth_signature)
-      
-        $.ajax({
-                'url' : message.action,
-                'data' : parameterMap,
-                'dataType' : 'jsonp',
-                'global' : true,
-                'jsonpCallback' : 'cb',
-                'success' : function(data){
-                        console.log(data);
-                }
-        });
+                var parameters = {
+                  oauth_consumer_key: auth.consumerKey,
+                  oauth_token: auth.accessToken,
+                  oauth_nonce: nonce_generate(),
+                  oauth_timestamp: Math.floor(Date.now()/1000),
+                  oauth_signature_method: 'HMAC-SHA1',
+                  oauth_version : '1.0',
+                  callback: 'cb'              // This is crucial to include for jsonp implementation in AJAX or else the oauth-signature will be wrong.
+                };
+                
+                var encodedSignature = oauthSignature.generate('GET',yelp_url, parameters, auth.consumerSecret, auth.accessTokenSecret);
+                parameters.oauth_signature = encodedSignature;
+                
+                
+                $.ajax({
+                  url: yelp_url,
+                  data: parameters,
+                  cache: true,                // This is crucial to include as well to prevent jQuery from adding on a cache-buster parameter "_=23489489749837", invalidating our oauth-signature
+                  dataType: 'jsonp',
+                  success: function(results) {
+                    console.log(results);
+                  },
+                  fail: function() {
+                    // Do stuff on fail
+                  }
+                });
         }
         var MapViewModel = function() {
                 var self = this;
@@ -68,13 +57,15 @@
                  * @param detail string TODO the information for the infoWindow
                  * @return an object of the location added
                  */ 
-                this.createLocation      = function( title, latitude, longitude, data ) {
+                this.createLocation      = function( title, latitude, longitude, business_id ) {
                         var location = {
                                 position: new google.maps.LatLng(latitude, longitude),
                                 title:title,
                                 visible: true,
-                                map: self.map
+                                map: self.map,
+                                yelp: yelp(business_id)
                         };
+                        
                         
                     // add marker to array of markers
                     self.markers.push(new google.maps.Marker(location));
@@ -89,20 +80,18 @@
                 };
                 
                 this.coordinates = [
-                        new self.createLocation('Guitar Center', 40.757, -73.987),
-                        new self.createLocation('Guitar Center', 40.736817, -73.994547),
-                        new self.createLocation('Jazz Standard', 40.742158, -73.983826),
-                        new self.createLocation('Decade', 40.761092, -73.960916),
-                        new self.createLocation('Iridium', 40.761816, -73.983389),
-                        new self.createLocation('Jazz Gallery', 40.744605, -73.988547),
-                        new self.createLocation('Guitar New York', 40.762517, -73.977761),
-                        new self.createLocation('Metropolitan Room', 40.741462, -73.992067),
-                        new self.createLocation('Sam Ash', 40.753, -73.994 ),
-                        new self.createLocation("Rudy's Music (Closed)", 40.759, -73.983),
-                        new self.createLocation('Birdland Jazz Club', 40.759194, -73.989800),
-                        new self.createLocation('Colony Music (Closed)', 40.761061, -73.984740),
-                        new self.createLocation('Museum of Modern Art', 40.761417, -73.977120),
-                        new self.createLocation("Dizzy's Jazz Club", 40.768425, -73.982)
+                        new self.createLocation('Guitar Center', 40.757, -73.987, 'guitar-center-manhattan-3'),
+                        new self.createLocation('Guitar Center', 40.736817, -73.994547, 'guitar-center-manhattan'),
+                        new self.createLocation('Jazz Standard', 40.742158, -73.983826, 'jazz-standard-new-york'),
+                        new self.createLocation('Iridium', 40.761816, -73.983389, 'the-iridium-new-york'),
+                        new self.createLocation('Jazz Gallery', 40.744605, -73.988547, 'the-jazz-gallery-new-york-2'),
+                        new self.createLocation('Guitar New York', 40.762517, -73.977761, 'guitar-new-york-new-york'),
+                        new self.createLocation('Metropolitan Room', 40.741462, -73.992067, 'metropolitan-room-new-york'),
+                        new self.createLocation('Sam Ash', 40.753, -73.994,'sam-ash-music-stores-new-york'),
+                        new self.createLocation("Rudy's Music (Closed)", 40.759, -73.983, 'rudys-music-stop-new-york-2'),
+                        new self.createLocation('Birdland Jazz Club', 40.759194, -73.989800, 'birdland-new-york'),
+                        new self.createLocation('Museum of Modern Art', 40.761417, -73.977120, 'the-museum-of-modern-art-new-york-2'),
+                        new self.createLocation("Dizzy's Jazz Club", 40.768425, -73.982, 'dizzys-club-coca-cola-new-york')
                 ];
                 
                 
@@ -146,6 +135,13 @@
         
 }());
     
-
     
+function nonce_generate(length) {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for(var i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+}
 

@@ -1,79 +1,73 @@
 (function() {
-        function yelp( businessId, marker) {
-                var auth = { 
-                        consumerKey: "oZsD8h9BM0VQtveN7sYvHg", 
-                        consumerSecret: "EQhmDrmyjsJH7F5s3SEe516JbGY",
-                        accessToken: "N-R-C5cfJXo-4LrgGcpBJUQ6w3Y2_I6_",
-                        accessTokenSecret: "H9H8IFqCUxHqXxqJuoM0dEtHiDo",
-                        serviceProvider : {
-                            signatureMethod : "HMAC-SHA1"
-                        }
-                };
-                var yelp_url = 'https://api.yelp.com/v2/business/' + businessId;
-
-                var parameters = {
-                  oauth_consumer_key: auth.consumerKey,
-                  oauth_token: auth.accessToken,
-                  oauth_nonce: nonce_generate(),
-                  oauth_timestamp: Math.floor(Date.now()/1000),
-                  oauth_signature_method: 'HMAC-SHA1',
-                  oauth_version : '1.0',
-                  callback: 'cb'              // This is crucial to include for jsonp implementation in AJAX or else the oauth-signature will be wrong.
-                };
-                
-                var encodedSignature = oauthSignature.generate('GET',yelp_url, parameters, auth.consumerSecret, auth.accessTokenSecret);
-                parameters.oauth_signature = encodedSignature;
-                var response = null;
-                
-                $.ajax({
-                  url: yelp_url,
-                  data: parameters,
-                  cache: true,                // This is crucial to include as well to prevent jQuery from adding on a cache-buster parameter "_=23489489749837", invalidating our oauth-signature
-                  dataType: 'jsonp',
-                  success: function(results) {
-                        mapview.business(results);
-                        mapview.reviews = [];
-                        results.reviews.forEach( function(review) {
-                                mapview.reviews.push(review.excerpt + " - " + review.user.name);
-                        });
-                        
-                        if (marker !== undefined) {
-                                var contentString = '<div class="content">'+
-                                        '<h1 id="firstHeading" class="firstHeading">' + results.name + '</h1>'+
-                                        '<div id="bodyContent">'+
-                                        '<p>' + results.reviews[results.reviews.length - 1].excerpt + " - " + results.reviews[results.reviews.length - 1].user.name + '</p>'+
-                                        '<p><a href="' + results.url + '">'+
-                                        results.url + '</a> '+
-                                        '</div>'+
-                                        '</div>';
-                                new google.maps.InfoWindow({content: contentString}).open( mapview.map , marker);
-                        }
-                  },
-                  fail: function() {
-                    // Do stuff on fail
-                  }
-                });
-        }
-        
         
         var MapViewModel = function() {
                 var self = this;
                 
                 // Google map to display NYC
-                this.map =  new google.maps.Map(document.getElementById('map'), {
+                self.map =  new google.maps.Map(document.getElementById('map'), {
                         center: {lat: 40.7577, lng: -73.9857},
                         zoom: 14
                 });
                 
-                this.markers = new ko.observableArray();
-                this.searchFilter =  ko.observable('');
-                this.business = ko.observable('');
-                
-                this.updateText =  function(event) {
-                        event.preventDefault();
+                self.yelp = function( businessId, marker) {
+                        var auth = { 
+                                consumerKey: "oZsD8h9BM0VQtveN7sYvHg", 
+                                consumerSecret: "EQhmDrmyjsJH7F5s3SEe516JbGY",
+                                accessToken: "N-R-C5cfJXo-4LrgGcpBJUQ6w3Y2_I6_",
+                                accessTokenSecret: "H9H8IFqCUxHqXxqJuoM0dEtHiDo",
+                                serviceProvider : {
+                                    signatureMethod : "HMAC-SHA1"
+                                }
+                        };
+                        var yelp_url = 'https://api.yelp.com/v2/business/' + businessId;
+        
+                        var parameters = {
+                          oauth_consumer_key: auth.consumerKey,
+                          oauth_token: auth.accessToken,
+                          oauth_nonce: nonce_generate(),
+                          oauth_timestamp: Math.floor(Date.now()/1000),
+                          oauth_signature_method: 'HMAC-SHA1',
+                          oauth_version : '1.0',
+                          callback: 'cb'              // This is crucial to include for jsonp implementation in AJAX or else the oauth-signature will be wrong.
+                        };
                         
-                        yelp($(this).attr('href'));
-                };
+                        var encodedSignature = oauthSignature.generate('GET',yelp_url, parameters, auth.consumerSecret, auth.accessTokenSecret);
+                        parameters.oauth_signature = encodedSignature;
+                        var response = null;
+                        
+                        $.ajax({
+                          url: yelp_url,
+                          data: parameters,
+                          cache: true,                // This is crucial to include as well to prevent jQuery from adding on a cache-buster parameter "_=23489489749837", invalidating our oauth-signature
+                          dataType: 'jsonp',
+                          success: function(results) {
+                                self.business(results);
+                                self.reviews = [];
+                                results.reviews.forEach( function(review) {
+                                       self.reviews.push(review.excerpt + " - " + review.user.name);
+                                });
+                                
+                                if (marker !== undefined) {
+                                        var contentString = '<div class="content">'+
+                                                '<h1 id="firstHeading" class="firstHeading">' + results.name + '</h1>'+
+                                                '<div id="bodyContent">'+
+                                                '<p>' + results.reviews[results.reviews.length - 1].excerpt + " - " + results.reviews[results.reviews.length - 1].user.name + '</p>'+
+                                                '<p><a href="' + results.url + '">'+
+                                                results.url + '</a> '+
+                                                '</div>'+
+                                                '</div>';
+                                        new google.maps.InfoWindow({content: contentString}).open( mapview.map , marker);
+                                }
+                          },
+                          fail: function() {
+                            // Do stuff on fail
+                          }
+                        });
+                }
+                
+                self.markers = new ko.observableArray();
+                self.searchFilter =  ko.observable('');
+                self.business = ko.observable('');
                 
                 /** Funtion to create a locations  for markers array
                  * @param title string the name of the location
@@ -82,7 +76,7 @@
                  * @param detail string TODO the information for the infoWindow
                  * @return an object of the location added
                  */ 
-                this.createLocation      = function( title, latitude, longitude, business_id ) {
+                self.createLocation      = function( title, latitude, longitude, business_id ) {
                         var location = {
                                 position: new google.maps.LatLng(latitude, longitude),
                                 title:title,
@@ -97,14 +91,14 @@
                     
                     // add click function to the new marker
                     self.markers()[self.markers().length-1].addListener('click', function() {
-                        yelp(this.yelp_id, this);
+                        self.yelp(this.yelp_id, this);
                     });
                     
                     // return the object
                     return location;
                 };
                 
-                this.coordinates = [
+                self.coordinates = [
                         new self.createLocation('Guitar Center', 40.7578132, -73.9871857, 'guitar-center-manhattan-3'),
                         new self.createLocation('Guitar Center', 40.736702, -73.9949493, 'guitar-center-manhattan'),
                         new self.createLocation('Jazz Standard', 40.7421646118164, -73.9838256835938, 'jazz-standard-new-york'),
@@ -126,7 +120,7 @@
                  * The function updates the sidelist and the visible markers based up what the user wishes to filter
                  * @param searchValue the newly input text to the search field
                  */
-                this.searchFilter.subscribe(function(searchValue) {
+                self.searchFilter.subscribe(function(searchValue) {
                         searchValue = searchValue.toLowerCase();
                         var change = false;
                         ko.utils.arrayForEach( self.markers(), function(marker) {

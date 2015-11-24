@@ -74,8 +74,6 @@
                     
                     // add click function to the new marker
                     self.markers()[self.markers().length-1].addListener('click', function() {
-                                self.selectedLocation = location;
-                               
                     });
                     
                     // return the object

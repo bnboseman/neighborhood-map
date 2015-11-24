@@ -9,6 +9,10 @@
                         zoom: 14
                 });
                 
+                self.updateList = function() {
+                       alert("hi");
+                }
+                
                 self.yelp = function( businessId, marker) {
                         var auth = { 
                                 consumerKey: "oZsD8h9BM0VQtveN7sYvHg", 
@@ -47,7 +51,7 @@
                                        self.reviews.push(review.excerpt + " - " + review.user.name);
                                 });
                                 
-                                if (marker !== undefined) {
+                                if (marker === typeof(ko.observableArray)) {
                                         var contentString = '<div class="content">'+
                                                 '<h1 id="firstHeading" class="firstHeading">' + results.name + '</h1>'+
                                                 '<div id="bodyContent">'+
@@ -76,7 +80,7 @@
                  * @param detail string TODO the information for the infoWindow
                  * @return an object of the location added
                  */ 
-                self.createLocation      = function( title, latitude, longitude, business_id ) {
+                self.createLocation = function( title, latitude, longitude, business_id ) {
                         var location = {
                                 position: new google.maps.LatLng(latitude, longitude),
                                 title:title,

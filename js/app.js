@@ -31,7 +31,8 @@
                   cache: true,                // This is crucial to include as well to prevent jQuery from adding on a cache-buster parameter "_=23489489749837", invalidating our oauth-signature
                   dataType: 'jsonp',
                   success: function(results) {
-                    console.log(results);
+                        console(results);
+                        return results;
                   },
                   fail: function() {
                     // Do stuff on fail
@@ -63,16 +64,18 @@
                                 title:title,
                                 visible: true,
                                 map: self.map,
-                                yelp: yelp(business_id)
+                                yelp_id: business_id
                         };
-                        
                         
                     // add marker to array of markers
                     self.markers.push(new google.maps.Marker(location));
+                    console.log(self.markers()[self.markers().length-1]);       
+                    
                     
                     // add click function to the new marker
                     self.markers()[self.markers().length-1].addListener('click', function() {
-                                
+                                self.selectedLocation = location;
+                               
                     });
                     
                     // return the object

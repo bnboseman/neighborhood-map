@@ -42,13 +42,7 @@
 			var encodedSignature = oauthSignature.generate('GET', yelp_url, parameters, auth.consumerSecret, auth.accessTokenSecret);
 			parameters.oauth_signature = encodedSignature;
 			var response = null;
-            self.markers().forEach(function(currentmarker) {
-                if (currentmarker.yelp_id === businessId) {
-                        currentmarker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
-                } else {
-                        currentmarker.setIcon('http://maps.google.com/mapfiles/ms/icons/purple-dot.png');
-                }
-            });
+            
 			$.ajax({
 				url: yelp_url,
 				data: parameters,
@@ -61,20 +55,23 @@
 					results.reviews.forEach(function(review) {
 						self.reviews.push({review: review.excerpt + " - " + review.user.name});
 					});
-                    console.log(results);
-
-					if (marker !== null) {
-						var contentString = '<div class="content">' +
-							'<h1 id="firstHeading" class="firstHeading">' + results.name + '</h1>' +
-							'<div id="bodyContent">' +
-							'<p>' + results.reviews[results.reviews.length - 1].excerpt + " - " + results.reviews[results.reviews.length - 1].user.name + '</p>' +
-							'<p><a href="' + results.url + '">' + results.url + '</a> ' +
-							'</div>' +
-							'</div>';
-						new google.maps.InfoWindow({
-							content: contentString
-						}).open(mapview.map, marker);
-					}
+                    self.markers().forEach(function(currentmarker) {
+                        if (currentmarker.yelp_id === businessId) {
+                                currentmarker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
+                                var contentString = '<div class="content">' +
+                                    '<h1 id="firstHeading" class="firstHeading">' + results.name + '</h1>' +
+                                    '<div id="bodyContent">' +
+                                    '<p>' + results.reviews[results.reviews.length - 1].excerpt + " - " + results.reviews[results.reviews.length - 1].user.name + '</p>' +
+                                    '<p><a href="' + results.url + '">' + results.url + '</a> ' +
+                                    '</div>' +
+                                    '</div>';
+                                new google.maps.InfoWindow({
+                                    content: contentString
+                                }).open(mapview.map, marker);
+                        } else {
+                                currentmarker.setIcon('http://maps.google.com/mapfiles/ms/icons/purple-dot.png');
+                        }
+                    });
 				},
 				fail: function() {
 					alert("Problem occured!");
@@ -109,6 +106,7 @@
 			// add click function to the new marker
 			self.markers()[self.markers().length - 1].addListener('click', function() {
                 marker = this;
+                self.yelp(this.yelp_id, this);
                 if (marker.getAnimation() !== null) {
                          marker.setAnimation(null);
                 } else {
@@ -118,7 +116,7 @@
                         }, 1400 );
                         
                 }
-				self.yelp(this.yelp_id, this);
+				
 			});
 
 			// return the object

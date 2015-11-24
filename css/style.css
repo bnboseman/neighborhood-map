@@ -39,3 +39,7 @@ a, a:hover, a:active, a:visited {
 .content a, .content a:hover,.content  a:active,.content  a:visited {
     color: #3cf;
 }
+
+.review {
+	margin: 20px 0;
+}

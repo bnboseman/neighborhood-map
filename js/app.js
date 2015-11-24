@@ -1,6 +1,8 @@
 (function() {
 	var MapViewModel = function() {
 		var self = this;
+		self.reviews = ko.observableArray();
+		self.location = ko.observableArray();
 
 		// Google map to display NYC
 		self.map = new google.maps.Map(document.getElementById('map'), {
@@ -11,9 +13,9 @@
 			zoom: 14
 		});
 
-		self.updateList = function() {
-			alert("hi");
-		}
+        self.updateList = function( businessId) {
+                self.yelp(businessId, null);
+        };
 
 		self.yelp = function(businessId, marker) {
 			var auth = {
@@ -40,7 +42,13 @@
 			var encodedSignature = oauthSignature.generate('GET', yelp_url, parameters, auth.consumerSecret, auth.accessTokenSecret);
 			parameters.oauth_signature = encodedSignature;
 			var response = null;
-
+            self.markers().forEach(function(currentmarker) {
+                if (currentmarker.yelp_id === businessId) {
+                        currentmarker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
+                } else {
+                        currentmarker.setIcon('http://maps.google.com/mapfiles/ms/icons/purple-dot.png');
+                }
+            });
 			$.ajax({
 				url: yelp_url,
 				data: parameters,
@@ -48,12 +56,14 @@
 				dataType: 'jsonp',
 				success: function(results) {
 					self.business(results);
-					self.reviews = [];
+					self.location(results.location.display_address);
+					self.reviews([]);
 					results.reviews.forEach(function(review) {
-						self.reviews.push(review.excerpt + " - " + review.user.name);
+						self.reviews.push({review: review.excerpt + " - " + review.user.name});
 					});
+                    console.log(results);
 
-					if (marker !== undefined) {
+					if (marker !== null) {
 						var contentString = '<div class="content">' +
 							'<h1 id="firstHeading" class="firstHeading">' + results.name + '</h1>' +
 							'<div id="bodyContent">' +
@@ -67,7 +77,7 @@
 					}
 				},
 				fail: function() {
-					// Do stuff on fail
+					alert("Problem occured!");
 				}
 			});
 		}
@@ -94,10 +104,20 @@
 
 			// add marker to array of markers
 			self.markers.push(new google.maps.Marker(location));
-
-
+            self.markers()[self.markers().length - 1].setAnimation(null);
+            self.markers()[self.markers().length - 1].setIcon('http://maps.google.com/mapfiles/ms/icons/purple-dot.png');
 			// add click function to the new marker
 			self.markers()[self.markers().length - 1].addListener('click', function() {
+                marker = this;
+                if (marker.getAnimation() !== null) {
+                         marker.setAnimation(null);
+                } else {
+                         marker.setAnimation(google.maps.Animation.BOUNCE);
+                        setTimeout( function(){
+                               marker.setAnimation(null);
+                        }, 1400 );
+                        
+                }
 				self.yelp(this.yelp_id, this);
 			});
 

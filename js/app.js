@@ -45,7 +45,6 @@ function init() {
 
 			var encodedSignature = oauthSignature.generate('GET', yelp_url, parameters, auth.consumerSecret, auth.accessTokenSecret);
 			parameters.oauth_signature = encodedSignature;
-<<<<<<< HEAD
 			var selectedMarker = null;
 			self.markers().forEach(function(currentmarker) {
 				if (currentmarker.yelp_id === businessId) {
@@ -81,13 +80,14 @@ function init() {
 					'<p><a href="' + results.url + '">' + results.url + '</a> ' +
 					'</div>' +
 					'</div>';
-					if (self.InfoMarker !== null) {
+					if (self.InfoMarker != null) {
 						self.InfoMarker.close();
 					}
 					self.InfoMarker = new google.maps.InfoWindow({
 						content: contentString
 					});
 					self.InfoMarker.open(mapview.map, selectedMarker);
+				
 				},
 				fail: function() {
 					alert("Problem occured!");

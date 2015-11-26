@@ -1,4 +1,4 @@
-(function() {
+function init() {
 	var MapViewModel = function() {
 		var self = this;
 		self.reviews = ko.observableArray();
@@ -177,11 +177,7 @@
 	// Activate knockout
 	mapview = new MapViewModel();
 	ko.applyBindings(mapview);
-}());
-
-
-
-
+};
 function nonce_generate(length) {
 	var text = "";
 	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -190,3 +186,4 @@ function nonce_generate(length) {
 	}
 	return text;
 }
+init();

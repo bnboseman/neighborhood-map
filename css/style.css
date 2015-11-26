@@ -1,10 +1,8 @@
 html,
-body,
-#map {
+body{
     width: 100%;
     height: 100%;
 }
-
 
 #search {
     position: absolute;
@@ -14,25 +12,29 @@ body,
     color: #fff;
 }
 
-@media screen and (max-width: 600px){
+@media screen and (orientation: portrait){
 	#search {
 		right: 0;
 		bottom: 0;
 		width: 100%;
-	    height: 200px;
+	    height: 30%;
 	    overflow: scroll;
 	}
 	#map {
-	padding-bottom: 200px;
-	overflow: scroll;
+	height: 70%;
+	width:100%;
 	}
 }
 	
-@media screen and (min-width: 600px){
+@media screen and (orientation: landscape){
 	#search {
 		right: 0;
-		width: 300px;
+		width: 20%;
 	    height: 100%;
+	}
+	#map {
+    	width: 80%;
+    	height: 100%;
 	}
 }
 	

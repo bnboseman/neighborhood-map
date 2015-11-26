@@ -1,6 +1,8 @@
+'use strict';
+
 function init() {
 	var MapViewModel = function() {
-		var self = this;
+		var self = this
 		self.reviews = ko.observableArray();
 		self.location = ko.observableArray();
 
@@ -41,7 +43,7 @@ function init() {
 
 			var encodedSignature = oauthSignature.generate('GET', yelp_url, parameters, auth.consumerSecret, auth.accessTokenSecret);
 			parameters.oauth_signature = encodedSignature;
-			var response = null;
+			
             self.markers().forEach(function(currentmarker) {
                 if (currentmarker.yelp_id === businessId) {
                         currentmarker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png');
@@ -49,6 +51,8 @@ function init() {
                         currentmarker.setIcon('http://maps.google.com/mapfiles/ms/icons/purple-dot.png');
                 }
             });
+            
+            
 			$.ajax({
 				url: yelp_url,
 				data: parameters,
@@ -61,7 +65,6 @@ function init() {
 					results.reviews.forEach(function(review) {
 						self.reviews.push({review: review.excerpt + " - " + review.user.name});
 					});
-                    console.log(results);
 
 					if (marker !== null) {
 						var contentString = '<div class="content">' +
@@ -80,7 +83,7 @@ function init() {
 					alert("Problem occured!");
 				}
 			});
-		}
+		};
 
 		self.markers = new ko.observableArray();
 		self.searchFilter = ko.observable('');
@@ -108,7 +111,7 @@ function init() {
             self.markers()[self.markers().length - 1].setIcon('http://maps.google.com/mapfiles/ms/icons/purple-dot.png');
 			// add click function to the new marker
 			self.markers()[self.markers().length - 1].addListener('click', function() {
-                marker = this;
+                var marker = this;
                 if (marker.getAnimation() !== null) {
                          marker.setAnimation(null);
                 } else {
@@ -153,19 +156,19 @@ function init() {
 				var text = marker.title.toLowerCase();
 
 				if (text.search(searchValue) === -1) {
-					if (marker.getVisible() == true) {
+					if (marker.getVisible() === true) {
 						change = true;
 					}
 					marker.setVisible(false);
 				} else {
-					if (marker.getVisible() == false) {
+					if (marker.getVisible() === false) {
 						change = true;
 					}
 					marker.setVisible(true);
 				}
 
 			});
-			if (change == true) {
+			if (change === true) {
 				var data = self.markers().slice(0);
 				self.markers([]);
 				self.markers(data);
@@ -175,9 +178,9 @@ function init() {
 	};
 
 	// Activate knockout
-	mapview = new MapViewModel();
+	var mapview = new MapViewModel();
 	ko.applyBindings(mapview);
-};
+}
 function nonce_generate(length) {
 	var text = "";
 	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

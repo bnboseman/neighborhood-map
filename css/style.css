@@ -11,7 +11,7 @@ body,
     z-index: 5;
     right: 0;
     padding: 10px;
-    width: 300px;
+    width: 350px;
     height: 100%;
     background-color: #362f27;
     color: #fff;
@@ -25,4 +25,21 @@ li {
     list-style: none;
     padding: 0;
     margin: 0;
+}
+
+h1 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+a, a:hover, a:active, a:visited {
+    color: #fff;
+}
+
+.content a, .content a:hover,.content  a:active,.content  a:visited {
+    color: #3cf;
+}
+
+.review {
+	margin: 20px 0;
 }

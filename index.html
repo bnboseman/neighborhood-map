@@ -14,10 +14,20 @@
         <div id="search">
             <input class="form-control" placeholder="Search" type="text" data-bind='value:searchFilter,valueUpdate: "afterkeydown"'>
             <ul data-bind="foreach: markers">
-                <li data-bind="text: title, visible:getVisible()"></li>
+                <a data-bind="click: function(data, event) { $parent.updateList(yelp_id, data, event) }, attr: {href: yelp_id }"><li data-bind="text: title, visible:getVisible()"></li></a>
             </ul>
-            <div data-bind="selectedLocation">
-                
+            <div>
+                <h1 data-bind="text: business()['name']"></h1>
+                <img data-bind="attr: {src : business()['image_url'], title: business()['name']}">
+                <div data-bind="foreach: location"><span data-bind="text: $data"></span><br /></div>
+                <div data-bind="text: business()['display_phone']"></div><br />
+                <img data-bind="attr: {src : business()['rating_img_url_large'], title: business()['rating']}">
+                <div class="reviews" data-bind="foreach: reviews">
+                	<div class="review">
+	                    <span data-bind="text: review"></span>
+	                    <span data-bind="text: name"></span>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="map">

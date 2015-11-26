@@ -186,4 +186,3 @@ function nonce_generate(length) {
 	}
 	return text;
 }
-init();
